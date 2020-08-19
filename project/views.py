@@ -6,6 +6,13 @@ from .models import Profile, Post, Rating
 import datetime as dt
 from . forms import ProfileForm, PostForm, RatingsForm
 
+# Api imports
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .serializer import PostSerializer, ProfileSerializer
+from rest_framework import status
+from .permissions import IsAdminOrReadOnly
+
 # Create your views here.
 def index(request):
     date =dt.date.today()
@@ -119,3 +126,31 @@ def site(request,site_id):
         form = RatingsForm()
 
     return render(request,"site.html",{"post":post,"profile":profile,"ratings":ratings,"form":form})
+
+class PostList(APIView):
+    permission_classes = (IsAdminOrReadOnly,)
+    def get(self, request, format=None):
+        all_post = Post.objects.all()
+        serializers = PostSerializer(all_post, many=True)
+        return Response(serializers.data)
+
+    def post(self, request, format=None):
+        serializers = PostSerializer(data=request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data, status=status.HTTP_201_CREATED)
+        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ProfileList(APIView):
+    permission_classes = (IsAdminOrReadOnly,)
+    def get(self, request, format=None):
+        all_profile = Profile.objects.all()
+        serializers = ProfileSerializer(all_profile, many=True)
+        return Response(serializers.data)
+
+    def post(self, request, format=None):
+        serializers = ProfileSerializer(data=request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data, status=status.HTTP_201_CREATED)
+        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
