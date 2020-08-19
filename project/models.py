@@ -60,3 +60,29 @@ class Post(models.Model):
         search = Post.objects.filter(Q(title_icontains=searchterm)|Q(description_icontains=searchterm)|Q(country_icontains=searchterm))
         return search
 
+class Rating(models.Model):
+    rating = (
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+        (6, '6'),
+        (7, '7'),
+        (8, '8'),
+        (9, '9'),
+        (10, '10'),
+    )
+    design = models.IntegerField(choices=rating,blank=True,default=0)
+    usability = models.IntegerField(choices=rating,blank=True,default=0)
+    creativity = models.IntegerField(choices=rating,blank=True,default=0)
+    content = models.IntegerField(choices=rating,blank=True,default=0)
+    overall_score = models.IntegerField(blank=True,default=0)
+    post = models.ForeignKey(Post,on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile,on_delete=models.CASCADE)
+
+    def save_rating(self):
+        self.save()
+
+    def _str_(self):
+        return f'{self.post} Rating'
