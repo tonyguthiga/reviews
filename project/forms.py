@@ -1,5 +1,5 @@
 from django import forms
-from .models import Profile, Post
+from .models import Profile, Post, Rating
 
 class ProfileForm(forms.ModelForm):
     class Meta:
@@ -9,3 +9,8 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         exclude = []
+class RatingsForm(forms.ModelForm):
+    class Meta:
+        model = Rating
+        fields = ['design', 'usability', 'content','creativity']
+        exclude=['overall_score','profile','post']
